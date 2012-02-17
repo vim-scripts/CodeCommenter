@@ -1,0 +1,132 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=3941
+
+codecommenter - Code Comment Assistant 
+
+Language:    Php, Python, Js, Java, C, C#, C++
+Maintainer:   九九 <xjiujiu@foxmail.com>
+License:      BSD New 
+Requires:     Vim >= 7.2
+Last Change:  2012-02-17 
+Version:      1.0.0
+
+Installation 
+------------ 
+
+1. Place this file and ipyqtmacvim.scpt in ~/.vim/plugins/
+
+2. Place the following line in your .vimrc (requires Vim >= 7.2) 
+"//////////////////////////////////////////
+"Config your commenter items
+let g:myCodeCommenterConfigItems  = {
+            \ 'author': 'xjiujiu',                                 ==> To config the author of these code 
+            \ 'siteUrl': 'http://www.xjiujiu.com',         ==> To config the site of the author 
+            \ 'email': 'xjiujiu@foxmail.com',             ==> To config the email of the author 
+            \ 'linsence': 'BSD NEW',                       ==> To config the code linsence 
+            \ 'copyRight': 'Copyright (c) 2011-2012 http://www.xjiujiu.com.All right reserved',    ==> To config the copyright information 
+            \ 'companyName': 'HongJuZi',                ==> Your company name 
+            \ 'projectDecription': 'HongJuZi Framework',   ==> To config the decsription of the project 
+            \ 'versionBySvn': 1                                ==> To config the version of the file is gen by subversion or by the script function
+"            \ }
+   This enables Vim to use your system clipboard. 
+   
+3. If desired, configure the hotkeys to run codeCommenter.The default hotkey is <Ctrl-M>
+
+Examples
+--------------
+" Version: $Id: test-codecommenter.vim 74 2012-02-17 01:45:19Z xjiujiu@gmail.com $
+///////////////////////////////////
+//f - <Ctrl-M>
+"""
+ " @Version			$Id: test-codecommenter.vim 74 2012-02-17 01:45:19Z xjiujiu@gmail.com $
+ " @Package 		None
+ " @Subpackage 		None
+ " @CopyRight 		Copyright (c) 2011-2012 http://www.xjiujiu.com.All right reserved
+ " 
+"""
+/**
+ * @Version				$Id: test-codecommenter.vim 74 2012-02-17 01:45:19Z xjiujiu@gmail.com $
+ * @Package: 			None
+ * @Subpackage: 		None
+ * @CopyRight: 			Copyright (c) 2011-2012 http://www.xjiujiu.com.All right reserved
+ * @License: 			Apache GNU
+ * 
+ */
+//////////////////////////////////////////
+//c - <Ctrl-M>
+"""
+ " @point
+ " 
+ " @desc
+ " 
+ " @Author 			九九 <xjiujiu@foxmail.com>
+ " @Package 		None
+ " @Version			$Id: test-codecommenter.vim 74 2012-02-17 01:45:19Z xjiujiu@gmail.com $
+"""
+
+/**
+ * @point
+ * 
+ * @desc
+ * 
+ * @Author 				九九 <xjiujiu@foxmail.com>
+ * @Package 			None
+ * @Version				$Id: test-codecommenter.vim 74 2012-02-17 01:45:19Z xjiujiu@gmail.com $
+ */
+//////////////////////////////////////////
+//m - <Ctrl-M>
+/**
+ * @point
+ * 
+ * @desc
+ * 
+ * @Access public
+ * @Param string test
+ * @Param  int yes
+ * @Return void
+ * @Exception none
+ */
+
+"""
+ " @point
+ " 
+ " @desc
+ " 
+ " @Access public
+ " @Param string test
+ " @Param  int yes
+ " @Return void
+ " @Exception none
+"""
+function GetName(string test, int yes)
+endfunction
+//////////////////////////////////////////
+//v - <Ctrl-M>
+/**
+ * var $string     
+ */
+
+"""
+ " var 
+"""
+let var = 1
+$string     = "test"
+//////////////////////////////////////////
+
+
+Troubleshooting 
+--------------- 
+/**
+ * The file type can't be supported!
+ */
+This means you file type can't be supported now!
+:(
+
+Contact 
+------- 
+
+xjiujiu at xjiujiu@foxmail.com
+
+Linux OS Notice
+-------
+ You need to change the enter mode.Please use dos2unix tool to do this.Example:
+dos2unix YourPath/codecommenter.vim
