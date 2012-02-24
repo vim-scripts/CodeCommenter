@@ -18,13 +18,13 @@
 "   Maintainer: 九九 <xjiujiu@foxmail.com>
 "          URL: http://www.vim.org/scripts/script.php?script_id=3941    
 "  Last Change: 2012.02.16 
-"      VERSION: $Id: codecommenter.vim 75 2012-02-17 02:24:57Z xjiujiu@gmail.com $
+"      VERSION: $Id: codecommenter.vim 78 2012-02-24 07:27:12Z xjiujiu@gmail.com $
 "        Usage: Please see these examples on the blow.
 "file comment example
 "//f - <C-M>
 "===> {{{
 "/**
-" * @Version			$Id: codecommenter.vim 75 2012-02-17 02:24:57Z xjiujiu@gmail.com $
+" * @Version			$Id: codecommenter.vim 78 2012-02-24 07:27:12Z xjiujiu@gmail.com $
 " * @Package: 			None
 " * @Subpackage: 		None
 " * @CopyRight: 		Copyright (c) 2011-2012 http://www.xjiujiu.com.All right reserved
@@ -43,7 +43,7 @@
 " * 
 " * @Author 			九九 <xjiujiu@foxmail.com>
 " * @Package 			None
-" * @Version			$Id: codecommenter.vim 75 2012-02-17 02:24:57Z xjiujiu@gmail.com $
+" * @Version			$Id: codecommenter.vim 78 2012-02-24 07:27:12Z xjiujiu@gmail.com $
 " */
 " }}}
 "//////////////////////////////////////////
@@ -117,15 +117,16 @@ endif
 
 "//////////////////////////////////////////
 "代码范围内用的变量定义
-let s:currentLine       = 0 
-let s:commentMask       = "*"
-
+let s:currentLine   = 0 
+let s:commentMask   = "*"
+let s:indent        = '' 
 "//////////////////////////////////////////
 "函数定义
 function! WriteComment()
     let commentList     = []
     let s:currentLine   = line(".")
     let commentType     = s:GetCurrentLineContent()
+    let s:indent        = s:GetIndentWidth(commentType)
     call s:GetCommentMask() 
     if commentType  =~ "//f"
         let commentList += s:GetFileComment()
@@ -346,7 +347,7 @@ function! s:GetVariableComment()
         if word == "=" || word == ";" || word == "\r" || word == "\n"
             break
         else
-            let variableComment http://ecodazoo.com/    .= word
+            let variableComment     .= word
         endif
         let i += 1
     endwhile
@@ -414,15 +415,39 @@ function! s:GetCommentMask()
     endif
 endfunction
 
+"""
+ " 得到当前行的缩进量 
+ " 
+ " 通过对当前行空格的统计，得到当前行真实的缩进量 
+ " 
+ " @Access public
+ " @Return void
+"""
+function! s:GetIndentWidth(string)
+    let indent  = '' 
+    let i       = 0
+    let len     = len(a:string)
+    while i < len
+        if a:string[i] != ' '
+            break
+        else
+            let indent .= ' ' 
+        endif
+        let i   += 1
+    endwhile
+
+    return indent
+endfunction
+
 "////////////////////////////////////////////////////////////
 "添加注释的内容到文件中
 function! s:AppendContext(context)
     if a:context == ""
         return
     elseif a:context == "\n"
-        call append(s:currentLine, s:currentLine)
+        call append(s:currentLine, s:indent . s:currentLine)
     else 
-        call append(s:currentLine, a:context)
+        call append(s:currentLine, s:indent . a:context)
     endif
     let s:currentLine     = s:currentLine + 1
 endfunction
