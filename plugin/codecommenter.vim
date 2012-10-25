@@ -18,18 +18,17 @@
 "   Maintainer: 九九 <xjiujiu@foxmail.com>
 "          URL: http://www.vim.org/scripts/script.php?script_id=3941    
 "  Last Change: 2012.02.16 
-"      VERSION: $Id: codecommenter.vim 78 2012-02-24 07:27:12Z xjiujiu@gmail.com $
+"      VERSION: $Id: codecommenter.vim 88 2012-05-20 06:15:48Z xjiujiu@gmail.com $
 "        Usage: Please see these examples on the blow.
 "file comment example
 "//f - <C-M>
 "===> {{{
 "/**
-" * @Version			$Id: codecommenter.vim 78 2012-02-24 07:27:12Z xjiujiu@gmail.com $
-" * @Package: 			None
-" * @Subpackage: 		None
-" * @CopyRight: 		Copyright (c) 2011-2012 http://www.xjiujiu.com.All right reserved
-" * @License: 			Apache GNU
-" * 
+" * @version $Id: codecommenter.vim 88 2012-05-20 06:15:48Z xjiujiu@gmail.com $
+" * @package: None
+" * @subpackage: None
+" * @copyRight: Copyright (c) 2011-2012 http://www.xjiujiu.com.All right reserved
+" * @license: Apache GNU
 " */
 " }}}
 "//////////////////////////////////////////
@@ -41,9 +40,9 @@
 " * 
 " * @desc
 " * 
-" * @Author 			九九 <xjiujiu@foxmail.com>
-" * @Package 			None
-" * @Version			$Id: codecommenter.vim 78 2012-02-24 07:27:12Z xjiujiu@gmail.com $
+" * @author 九九 <xjiujiu@foxmail.com>
+" * @package None
+" * @version $Id: codecommenter.vim 88 2012-05-20 06:15:48Z xjiujiu@gmail.com $
 " */
 " }}}
 "//////////////////////////////////////////
@@ -56,11 +55,11 @@
 " * 
 " * @desc
 " * 
-" * @Access public
-" * @Param string test
-" * @Param  int yes
-" * @Return void
-" * @Exception none
+" * @access public
+" * @param string test
+" * @param int yes
+" * @return void
+" * @throws none
 " */
 "function GetName(string test, int yes)
 "}}}
@@ -85,6 +84,7 @@
 "            \ 'copyRight': 'Copyright (c) 2011-2012 http://www.xjiujiu.com.All right reserved',    ==> To config the copyright information 
 "            \ 'companyName': 'HongJuZi',                   ==> Your company name 
 "            \ 'projectDecription': 'HongJuZi Framework',   ==> To config the decsription of the project 
+"            \ 'since': '1.0.0',                            ==> To config the decsription of the project 
 "            \ 'versionBySvn': 1                            ==> To config the version of the file is gen by subversion or by the script function
 "            \ }
 "
@@ -105,6 +105,7 @@ let s:codeCommenterConfigItems  = {
             \ "copyRight": "版本信息",
             \ "companyName": "公司名称", 
             \ "projectDecription": "项目描述",
+            \ "since": "1.0.0",
             \ "versionBySvn": 1
             \ } 
 if exists('g:myCodeCommenterConfigItems')
@@ -119,7 +120,9 @@ endif
 "代码范围内用的变量定义
 let s:currentLine   = 0 
 let s:commentMask   = "*"
-let s:indent        = '' 
+let s:indent        = ''
+let s:TAB           = "\t"
+
 "//////////////////////////////////////////
 "函数定义
 function! WriteComment()
@@ -152,10 +155,9 @@ endfunction
 function! s:GetFileComment()
     let fileComment     = [
                         \ s:GetVersionInfo(), 
-                        \ s:GetPackage(),
-                        \ s:GetSubpackage(), 
-                        \ s:GetCopyRight(), 
-                        \ s:GetProjectDescription()
+                        \ s:GetCreateInfo(),
+                        \ s:GetProjectDescription(),
+                        \ s:GetCopyRight()
                         \ ]
     return fileComment
 endfunction
@@ -163,18 +165,40 @@ endfunction
 "得到版本信息注释
 function! s:GetVersionInfo()
     if s:codeCommenterConfigItems['versionBySvn'] == 1
-        return " " . s:commentMask . " @Version\t\t\t$Id" . "$"
-    let versionInfo     = " " . s:commentMask . " @Version \t\t\t\t$Id"
-    let versionInfo     .= s:GetFileName() . "\t"
-    let versionInfo     .= s:GetSvnVersionNum() . "\t"
-    let versionInfo     .= s:GetCurrentTime()   . "\t"
+        return " " . s:commentMask . " @version" .
+               \ " $Id" . "$"
+    let versionInfo     = " " . s:commentMask . " @version " .
+                          \ . "$Id"
+    let versionInfo     .= s:GetFileName() . " " 
+    let versionInfo     .= s:GetSvnVersionNum() . " " 
+    let versionInfo     .= s:GetCurrentTime()   . " " 
     let versionInfo     .= s:author . " $"
     return versionInfo
 endfunction
 
-"得到Svn版本号
+"""
+ " 得到文件创建时间 
+ " 
+ " 返回当前文件创建的时间 
+ " 
+ " @access public
+ " @return void
+"""
+function! s:GetCreateInfo()
+    return " " . s:commentMask . " @create " . 
+           \ s:GetCurrentTime() . " By " . s:codeCommenterConfigItems['author']
+endfunction
+
+"""
+ "得到Svn版本号
+ " 
+ " 返回当前文件Svn的版本号 
+ " 
+ " @access public
+ " @return void
+"""
 function! s:GetSvnVersionNum()
-    return ""
+    return " " . s:commentMask . " @version " . "None"
 endfunction
 
 "得到当前时间
@@ -188,27 +212,29 @@ endfunction
 
 "得到包名
 function! s:GetPackage()
-    return " " . s:commentMask . " @Package \t\tNone"
+    return " " . s:commentMask . " @package " . "None"
 endfunction
 
 "得到子包名
 function! s:GetSubpackage()
-    return " " . s:commentMask . " @Subpackage \t\tNone"
+    return " " . s:commentMask . " @subpackage " . "None"
 endfunction
 
 "得到版权信息
 function! s:GetCopyRight()
-    return " " . s:commentMask . " @CopyRight \t\t" . s:codeCommenterConfigItems['copyRight']
+    return " " . s:commentMask . " @copyRight " .
+           \ s:codeCommenterConfigItems['copyRight']
 endfunction
 
 "得到协议注释
 function! s:GetLicense()
-    return " " . s:commentMask . " @License \t\t\t" . s:codeCommenterConfigItems['linsence']
+    return " " . s:commentMask . " @license " .
+           \ s:codeCommenterConfigItems['linsence']
 endfunction
 
 "得到工程描述信息
 function! s:GetProjectDescription()
-    return " " . s:commentMask . " " . s:codeCommenterConfigItems['projectDecription']
+    return " " . s:commentMask . " @description " . s:codeCommenterConfigItems['projectDecription']
 endfunction
 
 "/////////////////////////////////////////////////////////////////
@@ -221,14 +247,15 @@ function! s:GetClassComment()
                         \ s:GetBlackLine(),
                         \ s:GetAuthor(),
                         \ s:GetPackage(),
-                        \ s:GetVersionInfo()
+                        \ s:GetSince()
                         \ ]
     return classComment
 endfunction
 
 "得到作者注释
 function! s:GetAuthor()
-    return " " . s:commentMask . " @Author \t\t\t" . s:codeCommenterConfigItems['author'] .
+    return " " . s:commentMask . " @author " .
+           \ s:codeCommenterConfigItems['author'] .
            \ " <" . s:codeCommenterConfigItems['email'] . ">"
 endfunction
 "/////////////////////////////////////////////////////////////////
@@ -262,9 +289,10 @@ function! s:GetTypeMethodComment(methodCode)
                             \ s:GetBlackLine(),
                             \ " " . s:commentMask . " @desc",
                             \ s:GetBlackLine(),
-                            \ s:GetAccess(a:methodCode),
-                            \ s:GetParam(a:methodCode),
-                            \ s:GetReturn(),
+                            \ s:GetAuthor(),
+                            \ s:GetAccess(a:methodCode)]
+    let typeMethodComment   += s:GetParams(a:methodCode)
+    let typeMethodComment   += [s:GetReturn(),
                             \ s:GetException()
                             \ ]
     return typeMethodComment
@@ -277,6 +305,7 @@ function! s:GetNoTypeMethodComment(methodCode)
                                 \ s:GetBlackLine(),
                                 \ " " . s:commentMask . " @desc",
                                 \ s:GetBlackLine(),
+                                \ s:GetAuthor(),
                                 \ s:GetAccess(a:methodCode)]
     let noTypeMethodComment     += s:GetParams(a:methodCode)
     let noTypeMethodComment     += [s:GetReturn(),
@@ -287,7 +316,7 @@ endfunction
 
 "得到访问性的注释
 function! s:GetAccess(methodCode)
-    let access      = " " . s:commentMask . " @Access "
+    let access      = " " . s:commentMask . " @access "
     if match(a:methodCode, "private") != -1
         let access  .= "private"
     elseif match(a:methodCode, "protected") != -1
@@ -310,11 +339,11 @@ function! s:GetParams(methodCode)
     while i < len
         let word  = a:methodCode[i]
         if word == ","
-            let params  += [" " . s:commentMask . " @Param " . methodName] 
+            let params  += [" " . s:commentMask . " @param " . methodName] 
             let methodName  = ""
         elseif word == ")"
             if methodName != ""
-                let params  += [" " . s:commentMask . " @Param " . methodName]
+                let params  += [" " . s:commentMask . " @param " . methodName]
             endif
             break
         else 
@@ -325,31 +354,41 @@ function! s:GetParams(methodCode)
     return params
 endfunction
 
+"得到类版本信息注释
+function! s:GetSince()
+    return " " . s:commentMask . " @since " .
+                \ s:codeCommenterConfigItems['since']
+endfunction
+
 "得到返回信息注释
 function! s:GetReturn()
-    return " " . s:commentMask . " @Return void"
+    return " " . s:commentMask . " @return void"
 endfunction
 
 "得到异常信息注释
 function! s:GetException()
-    return " " . s:commentMask . " @Exception none"
+    return " " . s:commentMask . " @throws none"
 endfunction
 
 "////////////////////////////////////////////////////////////
 "得到对变量的注释
 function! s:GetVariableComment()
-    let variableComment     = " " . s:commentMask . " @Var "
+    let variableComment     = " " . s:commentMask . " @var "
     let i       = 0
+    let hasChar = 0
     let varCode = getline(s:currentLine + 1)
     let length  = len(varCode)
     while i < length
-        let word    = varCode[i]
-        if word == "=" || word == ";" || word == "\r" || word == "\n"
+        let char    = varCode[i]
+        let i       += 1
+        if char == "=" || char == ";" || char == "\r" || char == "\n"
             break
+        elseif char == ' ' && hasChar == 0 
+            continue
         else
-            let variableComment     .= word
+            let variableComment     .= char
+            let hasChar             = 1
         endif
-        let i += 1
     endwhile
     return [variableComment]
 endfunction
@@ -367,6 +406,9 @@ endfunction
 
 "得到文件扩展名
 function! s:GetFileExt()
+    if &ft == "javascript"
+        return "js"
+    endif
     return &ft 
 endfunction
 
@@ -420,8 +462,8 @@ endfunction
  " 
  " 通过对当前行空格的统计，得到当前行真实的缩进量 
  " 
- " @Access public
- " @Return void
+ " @access public
+ " @return void
 """
 function! s:GetIndentWidth(string)
     let indent  = '' 
