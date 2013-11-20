@@ -81,7 +81,7 @@
 "            \ 'siteUrl': 'http://www.xjiujiu.com',         ==> To config the site of the author 
 "            \ 'email': 'xjiujiu@foxmail.com',              ==> To config the email of the author 
 "            \ 'linsence': 'BSD NEW',                       ==> To config the code linsence 
-"            \ 'copyRight': 'Copyright (c) 2011-2012 http://www.xjiujiu.com.All right reserved',    ==> To config the copyright information 
+"            \ 'copyright': 'Copyright (c) 2011-2012 http://www.xjiujiu.com.All right reserved',    ==> To config the copyright information 
 "            \ 'companyName': 'HongJuZi',                   ==> Your company name 
 "            \ 'projectDecription': 'HongJuZi Framework',   ==> To config the decsription of the project 
 "            \ 'since': '1.0.0',                            ==> To config the decsription of the project 
@@ -102,7 +102,7 @@ let s:codeCommenterConfigItems  = {
             \ "email": "作者邮箱",
             \ "linsence": "版权信息",
             \ "siteUrl": "作者网站",
-            \ "copyRight": "版本信息",
+            \ "copyright": "版本信息",
             \ "companyName": "公司名称", 
             \ "projectDecription": "项目描述",
             \ "since": "1.0.0",
@@ -139,6 +139,8 @@ function! WriteComment()
         let commentList += s:GetMethodComment()
     elseif commentType =~ "//v"
         let commentList += s:GetVariableComment()
+    elseif commentType =~ "//i"
+        let commentList += s:GetInhertDocComment()
     endif
     if !empty(commentList)
         let commentList     = s:GetHeader() + commentList
@@ -155,7 +157,7 @@ endfunction
 function! s:GetFileComment()
     let fileComment     = [
                         \ s:GetVersionInfo(), 
-                        \ s:GetCreateInfo(),
+                        \ s:GetAuthor(),
                         \ s:GetProjectDescription(),
                         \ s:GetCopyRight()
                         \ ]
@@ -184,8 +186,8 @@ endfunction
  " @access public
  " @return void
 """
-function! s:GetCreateInfo()
-    return " " . s:commentMask . " @create " . 
+function! s:GetAuthor()
+    return " " . s:commentMask . " @author " . 
            \ s:GetCurrentTime() . " By " . s:codeCommenterConfigItems['author']
 endfunction
 
@@ -198,7 +200,7 @@ endfunction
  " @return void
 """
 function! s:GetSvnVersionNum()
-    return " " . s:commentMask . " @version " . "None"
+    return " " . s:commentMask . " @version " . "1.0.0"
 endfunction
 
 "得到当前时间
@@ -222,8 +224,8 @@ endfunction
 
 "得到版权信息
 function! s:GetCopyRight()
-    return " " . s:commentMask . " @copyRight " .
-           \ s:codeCommenterConfigItems['copyRight']
+    return " " . s:commentMask . " @copyright " .
+           \ s:codeCommenterConfigItems['copyright']
 endfunction
 
 "得到协议注释
@@ -391,6 +393,21 @@ function! s:GetVariableComment()
         endif
     endwhile
     return [variableComment]
+endfunction
+
+"////////////////////////////////////////////////////////////
+"得到对继承的注释
+function! s:GetInhertDocComment()
+    let inhertdocComment   = [
+                            \ " " . s:commentMask . " @point",
+                            \ s:GetBlackLine(),
+                            \ " " . s:commentMask . " @desc",
+                            \ s:GetBlackLine(),
+                            \ " " . s:commentMask . " {@inheritdoc}",
+                            \ s:GetBlackLine(),
+                            \ s:GetAuthor(),
+                            \ ]
+    return inhertdocComment
 endfunction
 
 "////////////////////////////////////////////////////////////
